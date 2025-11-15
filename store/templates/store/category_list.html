@@ -1,0 +1,16 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+    <h2>Category:</h2>
+
+    <ul>
+        {% for cat in categories %}
+            <li>
+                <a href="{% url 'product-list' cat.id %}">
+                    {{ cat.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

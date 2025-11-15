@@ -1,0 +1,19 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+    <h2>Products in category: {{ category.name }}</h2>
+
+    <a href="{% url 'category-list' %}">Back to all categories</a>
+    <hr>
+
+    {% for prod in products %}
+        <div style="border: 1px solid black; margin: 5px; padding: 5px;">
+            <h4>{{prod.name}}</h4>
+            <p>Price: {{prod.price}}</p>
+            <p>{{prod.description}}</p>
+        </div>
+    {% empty %}
+        <p>This category is empty now.</p>
+    {% endfor %}
+
+{% endblock %}

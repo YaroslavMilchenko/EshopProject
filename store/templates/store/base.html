@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eshop</title>
+</head>
+<body>
+    <div class="conteiner">
+        <div class="navbar">
+            <a href="{% url 'category-list' %}"><h1>Our shop</h1></a>
+        </div>
+        <hr>
+
+        {% if messages %}
+            {% for message in emssages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
