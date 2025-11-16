@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from .models import Category, Product
+from django.views import generic
+from .forms import CustomerUserCreationForm
+from django.urls import path, reverse_lazy
 
 def category_list(request):
     all_categories = Category.objects.all()
@@ -19,3 +22,9 @@ def product_list(request, category_id):
     }
     
     return render(request, 'store/product_list.html', context)
+
+class SignUpView(generic.CreateView):
+    form_class = CustomerUserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/signup.html'
+    
