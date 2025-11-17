@@ -10,6 +10,10 @@
                 <a href="{% url 'category-list' %}"><h1>Our shop</h1></a>
             </div>
 
+            <div class="navbar-cart">
+                <a href="{% url 'cart-detail' %}">My cart</a>
+            </div>
+
             <div class="user-controls">
                 {% if user.is_authenticated %}
                     <span><strong>{{user.username}}</strong></span>
@@ -25,15 +29,16 @@
             </div>
         </div>
         <hr>
-
+    </div>
         {% if messages %}
-            {% for message in emssages %}
-                <div class="flash">{{ message }}</div>
+            <ul class="messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
             {% endfor %}
+            </ul>
         {% endif %}
 
-        {% block content %}
-        {% endblock %}
-    </div>
+{% block content %}
+{% endblock %}
 </body>
 </html>

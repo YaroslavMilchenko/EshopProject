@@ -1,0 +1,37 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+    <h2>My cart</h2>
+
+    {% if not cart_items %}
+        <p>Your cart is empty</p>
+        <a href="{% url 'category-list' %}">Start shopping</a>
+    {% else %}
+        <table border="1" cellpadding="5" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Sum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.item_total_price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <hr>
+        <h3>Total: {{ total_price }} $</h3>
+
+        <a href="{% url 'category-list' %}" style="margin-right: 15px;">Continue shopping</a>
+        <a href="#" style="background-color: green; color: white; padding: 5px;">Buy</a>
+    {% endif %}
+{% endblock %}
