@@ -1,0 +1,40 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+    <h2>Placing an Order</h2>
+    <div style="display: flex; justify-content: space-between;">
+        <div style="width: 48%;">
+            <h3>Your detail</h3>
+            <form action="." method="post">
+                {% csrf_token %}
+
+                {{form.as_p}}
+
+                <p>
+                    <button type="submit" style="background-color: green; color: white; padding: 10px 20px; border: none; font-size: 16px; cursor: pointer;">
+                        Submit and order
+                    </button>
+                </p>
+            </form>
+        </div>
+
+        <div style="width: 48%; background-color: #f9f9f9; padding: 15px; border: 1px solid #eee;">
+            <h3>Your order</h3>
+            <ul style="list-style: none; padding: 0;">
+                {% for item in cart_items %}
+                    <li style="border-bottom: 1px solid #ddd; padding: 10px 0; display: flex; justify-content: space-between;">
+                        <span>
+                            {{item.product.name}}
+                            <span style="color: #777;">(x {{item.quantity}})</span>
+                        </span>
+                        <strong>{{item.item_total_price}} $</strong>
+                    </li>
+                {% endfor %}
+            </ul>
+            <hr>
+            <h3 style="text-align: right;">Total: {{total_price}} $</h3>
+        </div>
+
+    </div>
+
+{% endblock %}

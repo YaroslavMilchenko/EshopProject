@@ -18,6 +18,8 @@
                 {% if user.is_authenticated %}
                     <span><strong>{{user.username}}</strong></span>
 
+                    <a href="{% url 'order-history' %}" style="margin: 15px;">Order history</a>
+
                     <form action="{% url 'logout' %}" method="post" style="display: inline; margin-left: 15px;">
                         {% csrf_token %}
                         <button type="submit">Exit</button>

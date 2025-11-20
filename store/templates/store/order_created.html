@@ -1,0 +1,18 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+    <h2>Thanks for your order!</h2>
+
+    <p>
+        Your order **№{{order.id}}** was successfully created. 
+    </p>
+
+    <p>
+        We will contact you shortly by phone ({{ order.phone }}) 
+    or email ({{ order.email }}) to confirm delivery details 
+    to: {{ order.address }}.
+    </p>
+
+    <a href="{% url 'category-list' %}">Return to store</a>
+
+{% endblock %}

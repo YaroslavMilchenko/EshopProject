@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Category, Product
+from django.contrib.auth.decorators import login_required
+from .models import Category, Product, Order, OrderItem
 from django.views import generic
-from .forms import CustomerUserCreationForm
+from .forms import CustomerUserCreationForm, OrderCreateForm
 from django.urls import path, reverse_lazy
 
 def category_list(request):
@@ -42,6 +43,23 @@ def add_to_cart(request, product_id):
     return redirect(next_page)      
     # (request.META.get('HTTP_REFERER') is the "previous URL")
 
+def decrease_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    product_id_str = str(product_id)
+    
+    if product_id_str in cart:
+        if cart[product_id_str] > 1:
+            cart[product_id_str] -= 1
+            messages.success(request, f'Product quantity reduced')
+        else:
+            del cart[product_id_str]
+            messages.success(request, f'Product was remove from your cart')
+    
+        request.session['cart'] = cart
+        request.session.modified = True
+    return redirect('cart-detail')
+    
+
 def cart_detail(request):
     cart = request.session.get('cart', {})  #get cart from session or empty dictionary
     product_ids = cart.keys()
@@ -67,5 +85,69 @@ def cart_detail(request):
     }
     
     return render(request, 'store/cart_detail.html', context)
+
+def order_create(request):
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.error(request, f'Your cart is empty')
+        return redirect('caregory-list')
+    
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            if request.user.is_authenticated:
+                order.user = request.user
+                order.save()
+                products = Product.objects.filter(id__in = cart.keys())
+                
+                for product in products:
+                    quantity = cart[str(product.id)]
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        price=product.price,
+                        quantity = quantity,
+                    )
+                del request.session['cart']
+                request.session.modified = True
+                
+                return render(request, 'store/order_created.html', {'order': order})
+    else:
+        form = OrderCreateForm()
         
+        if request.user.is_authenticated:
+            initial_data = {
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email
+            }
+            form = OrderCreateForm(initial=initial_data)
+    
+    cart_items = []
+    total_price = 0
+    products = Product.objects.filter(id__in = cart.keys())
+    for product in products:
+        quantity = cart[str(product.id)]
+        item_total_price = quantity * product.price
+        cart_items.append({
+            'product':product,
+            'quantity': quantity,
+            'item_total_price': item_total_price,
+        })
+        total_price += item_total_price
         
+    context = {
+        'form': form,
+        'cart_items': cart_items,
+        'total_price': total_price
+    }
+    return render(request, 'store/checkout.html', context)
+
+@login_required
+def order_history(request):
+    my_orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    context = {
+        'orders': my_orders,
+    }
+    return render(request, 'store/order_history.html', context)
