@@ -1,0 +1,26 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+    <h2>Results for search: {{query}}</h2>
+
+    <a href="{% url 'category-list' %}">Back to all categories</a>
+    <hr>
+
+    {% if not products %}
+        <p>Nothing was found for this request</p>
+    {% else %}
+        {% for prod in products %}
+        <div style="border: 1px solid black; margin: 5px; padding: 5px;">
+            <h4>{{ prod.name }}</h4>
+            <p>Price: {{ prod.price }} $</p>
+            <p>{{ prod.description }}</p>
+            
+            <form action="{% url 'add-to-cart' prod.id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit">Add to cart</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

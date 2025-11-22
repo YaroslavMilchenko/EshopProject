@@ -13,6 +13,9 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    # upload_to: creates subfolders by year/month (to avoid lumping everything together)
+    # blank=True: allows you to create a product WITHOUT an image (to prevent old products from breaking)
+    image = models.ImageField(upload_to='products/%Y/%m/%d',blank=True, verbose_name='Image')
     
     def __str__(self):
         return self.name

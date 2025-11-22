@@ -5,6 +5,7 @@ from .models import Category, Product, Order, OrderItem
 from django.views import generic
 from .forms import CustomerUserCreationForm, OrderCreateForm
 from django.urls import path, reverse_lazy
+from django.core.paginator import Paginator
 
 def category_list(request):
     all_categories = Category.objects.all()
@@ -18,9 +19,14 @@ def product_list(request, category_id):
     category = Category.objects.get(id = category_id)
     products_in_category = Product.objects.filter(category=category)
     
+    paginator = Paginator(products_in_category, 3)
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     context = {
-        'products': products_in_category,
-        'category': category
+        'category': category,
+        'products': page_obj,
     }
     
     return render(request, 'store/product_list.html', context)
@@ -151,3 +157,16 @@ def order_history(request):
         'orders': my_orders,
     }
     return render(request, 'store/order_history.html', context)
+
+def search(request):
+    query = request.GET.get('q') # Get the search query from the URL (for example, ?q=milk)
+    products = []
+    
+    if query:
+        products = Product.objects.filter(name__icontains=query) #icontains searches for a partial match without regard to case
+    
+    context = {
+        'products': products,
+        'query': query,
+    }
+    return render(request, 'store/search_results.html', context)
